@@ -64,3 +64,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "google-apis-sheets_v4"
+gem "google-apis-drive_v3"
+gem "googleauth"
