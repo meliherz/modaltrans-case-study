@@ -6,6 +6,12 @@ class ProductsController < ApplicationController
     @products = Product.all
   end
 
+  # POST /products/sync
+  def sync
+    # TODO: Google Sheets sync logic will be added here
+    redirect_to products_path, notice: "Sync operation triggered."
+  end
+
   # GET /products/1 or /products/1.json
   def show
   end
@@ -58,12 +64,10 @@ class ProductsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_product
       @product = Product.find(params.expect(:id))
     end
 
-    # Only allow a list of trusted parameters through.
     def product_params
       params.expect(product: [ :name, :price, :stock, :category ])
     end
