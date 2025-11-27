@@ -6,11 +6,25 @@ class ProductsController < ApplicationController
     @products = Product.all
   end
 
-  # POST /products/sync
-  def sync
-    # TODO: Google Sheets sync logic will be added here
-    redirect_to products_path, notice: "Sync operation triggered."
+ # POST /products/sync
+ def sync
+  spreadsheet_id = ENV.fetch("GOOGLE_PRODUCTS_SHEET_ID", nil)
+  range = "Products!A2:E1000" # Sheet sayfa adı ve kolon aralığı
+
+  if spreadsheet_id.blank?
+    redirect_to products_path, alert: "Spreadsheet ID is not configured."
+    return
   end
+
+  service = GoogleSheets::SyncProductsFromSheet.new(
+    spreadsheet_id: spreadsheet_id,
+    range: range
+  )
+
+  synced_count = service.call
+
+  redirect_to products_path, notice: "Sync completed. #{synced_count} products processed."
+ end
 
   # GET /products/1 or /products/1.json
   def show
