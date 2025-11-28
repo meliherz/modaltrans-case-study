@@ -2,14 +2,20 @@
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
   <div>
-    <%= button_to "Sync Products from Google Sheet",
+    <%= button_to "Sync FROM Google Sheet",
                   sync_products_path,
                   method: :post,
-                  form: { data: { turbo_confirm: "Are you sure you want to sync products from Google Sheets?" } },
+                  form: { data: { turbo_confirm: "Are you sure you want to sync products FROM Google Sheets?" } },
+                  style: "padding: 8px 12px; margin-right: 8px;" %>
+
+    <%= button_to "Sync TO Google Sheet",
+                  sync_to_sheet_products_path,
+                  method: :post,
+                  form: { data: { turbo_confirm: "Are you sure you want to sync products TO Google Sheets?" } },
                   style: "padding: 8px 12px; margin-right: 8px;" %>
 
     <span style="font-size: 0.9rem; color: #555;">
-      Sync will import or update products based on the Google Sheet configuration.
+      FROM = import/update from Sheet, TO = export current DB state to Sheet.
     </span>
   </div>
 
