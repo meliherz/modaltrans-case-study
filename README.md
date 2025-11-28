@@ -37,11 +37,18 @@ The goal is to keep a Rails `Product` database table and a Google Sheet **perfec
 
 ## 📦 TECHNOLOGY STACK
 
+* **UI Framework:** Bootstrap 5 (via CDN)
+
 * **Backend:** Ruby on Rails 8.x
+
 * **Database:** SQLite
+
 * **External API:** Google Sheets API v4
+
 * **Authorization:** Google Service Account
+
 * **ENV Management:** dotenv-rails
+
 * **Architecture:** MVC + Service Objects
 
 ---
@@ -141,6 +148,7 @@ end
 
 ## 🎉 CONCLUSION
 
+This project now also includes **Bootstrap 5** for modern UI styling across layout, forms, tables, and action buttons.
 This project demonstrates:
 
 * Clean Rails architecture
