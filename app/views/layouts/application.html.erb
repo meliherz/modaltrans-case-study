@@ -25,5 +25,12 @@
 
   <body>
     <%= yield %>
+
+    <% flash.each do |type, message| %>
+  <p style="padding: 8px 12px; margin: 8px 0; background-color: #eef; border-radius: 4px;">
+    <%= message %>
+  </p>
+<% end %>
+
   </body>
 </html>
