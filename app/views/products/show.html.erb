@@ -1,10 +1,47 @@
-<p style="color: green"><%= notice %></p>
+<h1 class="mb-4">Product Details</h1>
 
-<%= render @product %>
+<div class="row">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow-sm mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-semibold"><%= @product.name %></span>
+        <span class="badge bg-secondary">
+          ID: <%= @product.id %>
+        </span>
+      </div>
 
-<div>
-  <%= link_to "Edit this product", edit_product_path(@product) %> |
-  <%= link_to "Back to products", products_path %>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-sm-4">Name</dt>
+          <dd class="col-sm-8"><%= @product.name %></dd>
 
-  <%= button_to "Destroy this product", @product, method: :delete %>
+          <dt class="col-sm-4">Price</dt>
+          <dd class="col-sm-8"><%= @product.price %></dd>
+
+          <dt class="col-sm-4">Stock</dt>
+          <dd class="col-sm-8"><%= @product.stock %></dd>
+
+          <dt class="col-sm-4">Category</dt>
+          <dd class="col-sm-8"><%= @product.category %></dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <div class="btn-group" role="group">
+        <%= link_to "Back to Products",
+                    products_path,
+                    class: "btn btn-outline-secondary" %>
+
+        <%= link_to "Edit",
+                    edit_product_path(@product),
+                    class: "btn btn-primary" %>
+      </div>
+
+      <%= link_to "Delete",
+                  @product,
+                  data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+                  class: "btn btn-outline-danger" %>
+    </div>
+  </div>
 </div>
