@@ -4,7 +4,7 @@ require "googleauth"
 module GoogleSheets
   class SyncProductsFromSheet
     SCOPE = [
-      "https://www.googleapis.com/auth/spreadsheets.readonly"
+      "https://www.googleapis.com/auth/spreadsheets"
     ].freeze
 
     def initialize(spreadsheet_id:, range:)
@@ -17,23 +17,18 @@ module GoogleSheets
     end
 
     def call
-      # Google Sheet'ten satırları çek
       response = @service.get_spreadsheet_values(@spreadsheet_id, @range)
       rows = response.values || []
-
-      # Sheet boşsa çık
       return 0 if rows.empty?
 
-      # İlk satırı başlık kabul ediyoruz: id | name | price | stock | category
       header = rows.shift
+      sheet_name = @range.split("!").first
 
       synced_count = 0
 
       ActiveRecord::Base.transaction do
-        rows.each do |row|
+        rows.each_with_index do |row, index|
           attrs = build_attributes_from_row(header, row)
-
-          # name boşsa kaydetmeye çalışma
           next if attrs[:name].blank?
 
           product = if attrs[:id].present?
@@ -47,11 +42,13 @@ module GoogleSheets
           if product.valid?
             product.save!
             synced_count += 1
+            clear_error_cell(sheet_name, index)
           else
+            error_message = product.errors.full_messages.join(", ")
             Rails.logger.warn(
-              "Product validation failed for row #{row.inspect} - errors: #{product.errors.full_messages}"
+              "Product validation failed for row #{row.inspect} - errors: #{error_message}"
             )
-            # İleride istersen bu hataları Sheet'e de yazabiliriz
+            write_error_to_sheet(sheet_name, index, error_message)
           end
         end
       end
@@ -71,7 +68,6 @@ module GoogleSheets
     end
 
     def build_attributes_from_row(header, row)
-      # ["id", "name", "price"...] + ["1", "iPhone", "1000"...] -> { id: "1", name: "iPhone", ... }
       data = header.zip(row).to_h.symbolize_keys
 
       {
@@ -81,6 +77,38 @@ module GoogleSheets
         stock:    data[:stock].presence && data[:stock].to_i,
         category: data[:category]
       }
+    end
+
+    def write_error_to_sheet(sheet_name, row_index, error_message)
+      sheet_row = row_index + 2
+      error_range = "#{sheet_name}!F#{sheet_row}"
+
+      value_range = Google::Apis::SheetsV4::ValueRange.new(
+        values: [ [ error_message ] ]
+      )
+
+      @service.update_spreadsheet_value(
+        @spreadsheet_id,
+        error_range,
+        value_range,
+        value_input_option: "RAW"
+      )
+    end
+
+    def clear_error_cell(sheet_name, row_index)
+      sheet_row = row_index + 2
+      error_range = "#{sheet_name}!F#{sheet_row}"
+
+      value_range = Google::Apis::SheetsV4::ValueRange.new(
+        values: [ [ "" ] ]
+      )
+
+      @service.update_spreadsheet_value(
+        @spreadsheet_id,
+        error_range,
+        value_range,
+        value_input_option: "RAW"
+      )
     end
   end
 end

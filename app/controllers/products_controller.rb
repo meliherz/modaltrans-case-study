@@ -9,7 +9,7 @@ class ProductsController < ApplicationController
  # POST /products/sync
  def sync
   spreadsheet_id = ENV.fetch("GOOGLE_PRODUCTS_SHEET_ID", nil)
-  range = "Products!A1:E1000" # Sheet sayfa adı ve kolon aralığı
+  range = "Products!A1:F1000" # Sheet sayfa adı ve kolon aralığı
 
   if spreadsheet_id.blank?
     redirect_to products_path, alert: "Spreadsheet ID is not configured."
