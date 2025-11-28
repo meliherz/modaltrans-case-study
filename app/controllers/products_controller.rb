@@ -26,6 +26,25 @@ class ProductsController < ApplicationController
   redirect_to products_path, notice: "Sync completed. #{synced_count} products processed."
  end
 
+ def sync_to_sheet
+  spreadsheet_id = ENV.fetch("GOOGLE_PRODUCTS_SHEET_ID", nil)
+  range = "Sheet1!A1:F1000" # mevcut sheet/tab adını ve kolon aralığını burada kullan
+
+  if spreadsheet_id.blank?
+    redirect_to products_path, alert: "Spreadsheet ID is not configured."
+    return
+  end
+
+  service = GoogleSheets::SyncProductsToSheet.new(
+    spreadsheet_id: spreadsheet_id,
+    range: range
+  )
+
+  pushed_count = service.call
+
+  redirect_to products_path, notice: "Sync to Sheet completed. #{pushed_count} products exported."
+ end
+
   # GET /products/1 or /products/1.json
   def show
   end
